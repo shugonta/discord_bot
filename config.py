@@ -10,3 +10,4 @@ class Config():
     post_interval = 1200
     invite_interval = 1200
     status_check_period = 10
+    delete_period = 3600

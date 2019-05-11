@@ -77,13 +77,18 @@ async def check_channel():
                             # print(user.name)
 
 
+async def delete_msg_loop():
+    while True:
+        await asyncio.sleep(conf.delete_period)
+        await delete_msg()
+
+
 # Botメッセージ削除
 async def delete_msg():
     general_channel = client.get_channel(conf.general)
     async for message in general_channel.history(limit=200):
         if message.author.id == conf.bot_id:
             await message.delete()
-    print('Message deleted')
 
 
 @client.event
@@ -93,11 +98,12 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     # print('------')
-    await delete_msg()
     client.loop.create_task(check_channel())
     guild = client.get_guild(conf.guild)
     for channel in guild.voice_channels:
         voice_channel_list[channel.id] = voice_channel_status.VoiceChannelStatus()
+    await delete_msg()
+    client.loop.create_task(delete_msg_loop())
     # await general_channel.send("で、でますよ")
 
 
