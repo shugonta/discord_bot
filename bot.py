@@ -2,6 +2,7 @@ import discord
 import config
 import voice_channel_status
 import asyncio
+import pytz
 from datetime import datetime
 
 client = discord.Client()
@@ -35,9 +36,9 @@ async def check_channel():
             channel = client.get_channel(id)
 
             # オフ0
-            duration = datetime.now() - voice_channel.last_changed_time
+            duration = datetime.now(pytz.timezone('Asia/Tokyo')) - voice_channel.last_changed_time
             if voice_channel.last_post_time:
-                interval = (datetime.now() - voice_channel.last_post_time).seconds
+                interval = (datetime.now(pytz.timezone('Asia/Tokyo')) - voice_channel.last_post_time).seconds
             else:
                 interval = conf.post_interval
             if duration.seconds >= conf.timeout_time and interval >= conf.post_interval:
@@ -47,7 +48,7 @@ async def check_channel():
 
             # 複数人同ゲームプレイ時にオンラインユーザへinvite
             if voice_channel.last_invite_time:
-                interval = (datetime.now() - voice_channel.last_invite_time).seconds
+                interval = (datetime.now(pytz.timezone('Asia/Tokyo')) - voice_channel.last_invite_time).seconds
             else:
                 interval = conf.invite_interval
 
@@ -120,7 +121,7 @@ async def on_voice_state_update(member, before, after):
     if not before.channel and after.channel:
         channel_name = after.channel.name
         await general_channel.send("ウイイイイイイイッッッッス。どうも、%sでーす" % member.name)
-        await general_channel.send("えーとですね、まぁ集合場所の、えー%sに行ってきたんですけども、ただいまの時刻は%s時を回りました" % (channel_name, datetime.now().strftime("%H")))
+        await general_channel.send("えーとですね、まぁ集合場所の、えー%sに行ってきたんですけども、ただいまの時刻は%s時を回りました" % (channel_name, datetime.now(pytz.timezone('Asia/Tokyo')).strftime("%H")))
     elif before.channel and not after.channel:
         channel_name = before.channel.name
         # await
