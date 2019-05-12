@@ -15,6 +15,7 @@
 import os
 import sys
 import json
+import config
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
@@ -29,6 +30,7 @@ from linebot.models import (
 )
 
 app = Flask(__name__)
+conf = config.Config
 
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
@@ -69,6 +71,19 @@ def callback():
 #         TextSendMessage(text=event.message.text)
 #     )
 
+def load_json(filename):
+    f = open(filename, 'r')
+    data = json.loads(f)
+    print(data)
+    f.close()
+    return data
+
+def write_json(filename, data):
+    f = open(filename, 'w')
+    json.dump(data, f)
+    print(json.dumps(data))
+    f.close()
+
 @handler.add(JoinEvent)
 def join_event(event):
     if event.type == "join":
@@ -78,13 +93,10 @@ def join_event(event):
             group_id = event.source.group_id
         if group_id != 0:
             f = open('grouplist.json', 'w')
-            group_list = json.load(f)
+            group_list = load_json(conf.json_file_name)
             if group_id not in group_list:
                 group_list.append(group_id)
-            json.dump(group_list, f)
-            print(json.dumps(group_list))
-            f.close()
-
+            write_json(conf.json_file_name, group_list)
     print(event)
 
 
