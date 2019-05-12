@@ -120,8 +120,8 @@ def leave_event(event):
                 group_list.remove(group_id)
             else:
                 print("%s is not in group list." % group_id)
-
-    print(event)
+            write_json(conf.json_file_name, group_list)
+    # print(event)
 
 
 def app_start():
