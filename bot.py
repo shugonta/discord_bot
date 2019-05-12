@@ -4,10 +4,57 @@ import voice_channel_status
 import asyncio
 import pytz
 from datetime import datetime
+from linebot import LineBotApi
+from linebot.models import TextSendMessage
+import os
+import sys
+from argparse import ArgumentParser
+
+from flask import Flask, request, abort
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage,
+)
 
 client = discord.Client()
 conf = config.Config
 voice_channel_list = {}
+line_bot_api = None
+guild_id = 0
+
+app = Flask(__name__)
+
+# get channel_secret and channel_access_token from your environment variable
+channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
+channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+if channel_secret is None:
+    print('Specify LINE_CHANNEL_SECRET as environment variable.')
+    sys.exit(1)
+
+handler = WebhookHandler(channel_secret)
+
+
+@app.route("/callback", methods=['POST'])
+def callback():
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
+
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+
+    # handle webhook body
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+
+    return 'OK'
 
 
 # ステータス確認
@@ -71,7 +118,7 @@ async def check_channel():
                             playing_same = False
                             break
                 if playing_same:
-                    guild = client.get_guild(conf.guild)
+                    guild = client.get_guild(guild_id)
                     for user in guild.members:
                         if user.status == discord.Status.online and user.id not in member_list and user.id != conf.bot_id:
                             await general_channel.send("<@!%s> この辺でぇ、%s、やってるらしいっすよ。じゃけん参加しましょうね～" % (user.id, name))
@@ -92,15 +139,31 @@ async def delete_msg():
             await message.delete()
 
 
+# Line用Flask開始
+async def flask_start():
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
+
 @client.event
 async def on_ready():
     general_channel = client.get_channel(conf.general)
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
-    # print('------')
+    print('------')
+    line_bot_api = LineBotApi(conf.line_access_token)
+    print('Line bot initiated')
+    client.loop.create_task(flask_start())
+    print('Flask initiated')
+    print('------')
+
     client.loop.create_task(check_channel())
-    guild = client.get_guild(conf.guild)
+    async for guild in client.fetch_guilds(limit=1):
+        guild_id = guild.id
+    if guild_id == 0:
+        exit(-1)
+    guild = client.get_guild(guild_id)
     for channel in guild.voice_channels:
         voice_channel_list[channel.id] = voice_channel_status.VoiceChannelStatus()
     await delete_msg()
@@ -122,6 +185,8 @@ async def on_voice_state_update(member, before, after):
         channel_name = after.channel.name
         await general_channel.send("ウイイイイイイイッッッッス。どうも、%sでーす" % member.name)
         await general_channel.send("えーとですね、まぁ集合場所の、えー%sに行ってきたんですけども、ただいまの時刻は%s時を回りました" % (channel_name, datetime.now(pytz.timezone('Asia/Tokyo')).strftime("%H")))
+        messages = TextSendMessage(text=f"ウイイイイイイイッッッッス。どうも、{member.name}でーす")
+        # line_bot_api.push_message(user_id, messages=messages)
     elif before.channel and not after.channel:
         channel_name = before.channel.name
         # await

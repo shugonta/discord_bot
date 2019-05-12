@@ -3,7 +3,6 @@ import os
 
 class Config():
     token = os.environ["DISCORD_TOKEN"]
-    guild = os.environ["DISCORD_GUILD"]
     general = 345804296991801345
     off_sanka = 389011203206283264
     aeon_cinema = 345804296991801346
