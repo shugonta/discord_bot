@@ -1,1 +1,1 @@
-discordbot: python flask_server.py
+web: python flask_server.py
