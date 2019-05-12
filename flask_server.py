@@ -14,6 +14,7 @@
 
 import os
 import sys
+import json
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
@@ -70,6 +71,20 @@ def callback():
 
 @handler.add(JoinEvent)
 def join_event(event):
+    if event.type == "join":
+        groupId = 0
+        type = event.source.type
+        if type == "group":
+            groupId = event.source.groupId
+        if groupId != 0:
+            f = open('grouplist.json', 'rw')
+            group_list = json.load(f)
+            if groupId not in group_list:
+                group_list.append(groupId)
+            json.dump(group_list, f)
+            print(json.dumps(group_list))
+            f.close()
+
     print(event)
 
 def app_start():
