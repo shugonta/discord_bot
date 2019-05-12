@@ -25,7 +25,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, JoinEvent, TextMessage, TextSendMessage
+    MessageEvent, JoinEvent, LeaveEvent, TextMessage, TextSendMessage
 )
 
 app = Flask(__name__)
@@ -77,7 +77,7 @@ def join_event(event):
         if type == "group":
             group_id = event.source.group_id
         if group_id != 0:
-            f = open('grouplist.json', 'rw')
+            f = open('grouplist.json', 'w')
             group_list = json.load(f)
             if group_id not in group_list:
                 group_list.append(group_id)
@@ -87,10 +87,15 @@ def join_event(event):
 
     print(event)
 
+
+@handler.add(LeaveEvent)
+def leave_event(event):
+    print(event)
+
+
 def app_start():
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
 
 # if __name__ == "__main__":
 #     app_start()
