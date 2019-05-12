@@ -73,7 +73,7 @@ def callback():
 
 def load_json(filename):
     f = open(filename, 'r')
-    data = json.loads(f)
+    data = json.load(f)
     print(data)
     f.close()
     return data
