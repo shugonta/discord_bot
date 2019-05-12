@@ -1,1 +1,1 @@
-web: python flask_server.py
+web: python bot.py
