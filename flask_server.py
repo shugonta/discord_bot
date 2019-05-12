@@ -78,11 +78,13 @@ def load_json(filename):
     f.close()
     return data
 
+
 def write_json(filename, data):
     f = open(filename, 'w')
     json.dump(data, f)
     print(json.dumps(data))
     f.close()
+
 
 @handler.add(JoinEvent)
 def join_event(event):
@@ -93,7 +95,10 @@ def join_event(event):
             group_id = event.source.group_id
         if group_id != 0:
             f = open('grouplist.json', 'w')
-            group_list = load_json(conf.json_file_name)
+            try:
+                group_list = load_json(conf.json_file_name)
+            except:
+                group_list = []
             if group_id not in group_list:
                 group_list.append(group_id)
             write_json(conf.json_file_name, group_list)
