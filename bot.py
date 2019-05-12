@@ -86,6 +86,7 @@ async def check_channel(guild_id):
                     for user in guild.members:
                         if user.status == discord.Status.online and user.id not in member_list and user.id != conf.bot_id:
                             await general_channel.send("<@!%s> この辺でぇ、%s、やってるらしいっすよ。じゃけん参加しましょうね～" % (user.id, name))
+                            voice_channel.invite()
                             # print(user.name)
 
 
