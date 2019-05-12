@@ -73,7 +73,11 @@ async def check_channel():
                             playing_same = False
                             break
                     else:
-                        if member.activity.application_id != id:
+                        if member.activity:
+                            if member.activity.application_id != id:
+                                playing_same = False
+                                break
+                        else:
                             playing_same = False
                             break
                 if playing_same:
