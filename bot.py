@@ -4,6 +4,7 @@ import voice_channel_status
 import asyncio
 import pytz
 import flask_server
+from group_list import load_json, write_json
 from datetime import datetime
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
@@ -141,7 +142,9 @@ async def on_voice_state_update(member, before, after):
         await general_channel.send("ウイイイイイイイッッッッス。どうも、%sでーす" % member.name)
         await general_channel.send("えーとですね、まぁ集合場所の、えー%sに行ってきたんですけども、ただいまの時刻は%s時を回りました" % (channel_name, datetime.now(pytz.timezone('Asia/Tokyo')).strftime("%H")))
         messages = TextSendMessage(text=f"ウイイイイイイイッッッッス。どうも、{member.name}でーす")
-        # line_bot_api.push_message(user_id, messages=messages)
+        group_list = load_json(conf.json_file_name)
+        for group_id in group_list:
+            line_bot_api.push_message(group_id, messages=messages)
     elif before.channel and not after.channel:
         channel_name = before.channel.name
         # await

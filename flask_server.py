@@ -16,6 +16,7 @@ import os
 import sys
 import json
 import config
+from group_list import write_json, load_json
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
@@ -71,21 +72,6 @@ def callback():
 #         TextSendMessage(text=event.message.text)
 #     )
 
-def load_json(filename):
-    f = open(filename, 'r')
-    data = json.load(f)
-    print(data)
-    f.close()
-    return data
-
-
-def write_json(filename, data):
-    f = open(filename, 'w')
-    json.dump(data, f)
-    print(json.dumps(data))
-    f.close()
-
-
 @handler.add(JoinEvent)
 def join_event(event):
     if event.type == "join":
@@ -93,10 +79,7 @@ def join_event(event):
         if event.source.type == "group":
             group_id = event.source.group_id
         if group_id != 0:
-            try:
-                group_list = load_json(conf.json_file_name)
-            except:
-                group_list = []
+            group_list = load_json(conf.json_file_name)
             if group_id not in group_list:
                 group_list.append(group_id)
             else:
@@ -112,10 +95,7 @@ def leave_event(event):
         if event.source.type == "group":
             group_id = event.source.group_id
         if group_id != 0:
-            try:
-                group_list = load_json(conf.json_file_name)
-            except:
-                group_list = []
+            group_list = load_json(conf.json_file_name)
             if group_id in group_list:
                 group_list.remove(group_id)
             else:
