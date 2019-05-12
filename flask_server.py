@@ -90,23 +90,37 @@ def write_json(filename, data):
 def join_event(event):
     if event.type == "join":
         group_id = 0
-        type = event.source.type
-        if type == "group":
+        if event.source.type == "group":
             group_id = event.source.group_id
         if group_id != 0:
-            f = open('grouplist.json', 'w')
             try:
                 group_list = load_json(conf.json_file_name)
             except:
                 group_list = []
             if group_id not in group_list:
                 group_list.append(group_id)
+            else:
+                print("%s already added." % group_id)
             write_json(conf.json_file_name, group_list)
-    print(event)
+    # print(event)
 
 
 @handler.add(LeaveEvent)
 def leave_event(event):
+    if event.type == "leave":
+        group_id = 0
+        if event.source.type == "group":
+            group_id = event.source.group_id
+        if group_id != 0:
+            try:
+                group_list = load_json(conf.json_file_name)
+            except:
+                group_list = []
+            if group_id in group_list:
+                group_list.remove(group_id)
+            else:
+                print("%s is not in group list." % group_id)
+
     print(event)
 
 
