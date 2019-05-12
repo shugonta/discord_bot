@@ -72,3 +72,6 @@ def message_text(event):
 def app_start():
     # port = int(os.getenv("PORT", 5000))
     app.run(threaded=True)
+
+if __name__ == "__main__":
+    app_start()
