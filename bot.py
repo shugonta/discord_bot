@@ -33,7 +33,7 @@ def get_time_str(duration):
         return "%d秒" % s
 
 
-async def check_channel():
+async def check_channel(guild_id):
     general_channel = client.get_channel(conf.general)
     while True:
         # await general_channel.send("test")
@@ -113,12 +113,12 @@ async def on_ready():
     print('Line bot initiated')
     print('------')
 
-    client.loop.create_task(check_channel())
     async for guild in client.fetch_guilds(limit=1):
         guild_id = guild.id
     if guild_id == 0:
         exit(-1)
     guild = client.get_guild(guild_id)
+    client.loop.create_task(check_channel(guild_id))
     for channel in guild.voice_channels:
         voice_channel_list[channel.id] = voice_channel_status.VoiceChannelStatus()
     await delete_msg()
