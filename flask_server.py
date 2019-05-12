@@ -72,15 +72,15 @@ def callback():
 @handler.add(JoinEvent)
 def join_event(event):
     if event.type == "join":
-        groupId = 0
+        group_id = 0
         type = event.source.type
         if type == "group":
-            groupId = event.source.groupId
-        if groupId != 0:
+            group_id = event.source.group_id
+        if group_id != 0:
             f = open('grouplist.json', 'rw')
             group_list = json.load(f)
-            if groupId not in group_list:
-                group_list.append(groupId)
+            if group_id not in group_list:
+                group_list.append(group_id)
             json.dump(group_list, f)
             print(json.dumps(group_list))
             f.close()
