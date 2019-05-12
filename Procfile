@@ -1,1 +1,1 @@
-discordbot: python bot.py
+discordbot: python bot.py | python flask.py
