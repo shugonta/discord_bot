@@ -15,4 +15,5 @@ class Config():
     delete_period = 3600
 
     line_access_token = os.environ["LINE_TOKEN"]
+    line_group = os.environ["LINE_GROUP"]
     json_file_name = "grouplist.json"
