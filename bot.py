@@ -3,9 +3,11 @@ import config
 import voice_channel_status
 import asyncio
 import pytz
+import flask_server
 from datetime import datetime
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
+from threading import Thread
 
 client = discord.Client()
 conf = config.Config
@@ -144,4 +146,6 @@ async def on_voice_state_update(member, before, after):
     #     print("change")
 
 
+job = Thread(target=flask_server.app_start)
+job.start()
 client.run(conf.token)
