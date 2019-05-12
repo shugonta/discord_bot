@@ -13,7 +13,7 @@ from threading import Thread
 client = discord.Client()
 conf = config.Config
 voice_channel_list = {}
-line_bot_api = None
+line_bot_api = LineBotApi(conf.line_access_token)
 guild_id = 0
 
 
@@ -110,9 +110,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    line_bot_api = LineBotApi(conf.line_access_token)
-    print('Line bot initiated')
-    print('------')
 
     async for guild in client.fetch_guilds(limit=1):
         guild_id = guild.id
@@ -125,6 +122,8 @@ async def on_ready():
     await delete_msg()
     client.loop.create_task(delete_msg_loop())
     # await general_channel.send("で、でますよ")
+    print('Initialized')
+    print('------')
 
 
 @client.event
