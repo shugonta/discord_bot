@@ -15,6 +15,7 @@ conf = config.Config
 voice_channel_list = {}
 line_bot_api = LineBotApi(conf.line_access_token)
 guild_id = 0
+last_app_id = {}
 
 
 # ステータス確認
@@ -65,6 +66,17 @@ async def check_channel(guild_id):
                 playing_same = True
                 member_list = []
                 for member in channel.members:
+                    if member.id not in last_app_id:
+                        last_app_id[member.id] = None
+                    if member.activity is None:
+                        if last_app_id[member.id] is not None:
+                            last_app_id[member.id] = None
+                    else:
+                        if last_app_id[member.id] != member.activity.application_id:
+                            messages = TextSendMessage(text="おい、%s！。お前さっき俺が着替えてる時、チラチラ%sやってただろ" % (member.name, member.activity.name))
+                            line_bot_api.push_message(conf.line_group, messages=messages)
+                            last_app_id[member.id] = member.activity.application_id
+
                     member_list.append(member.id)
                     if id == 0 and name == "":
                         if member.activity:
@@ -111,7 +123,6 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-
 
     async for guild in client.fetch_guilds(limit=1):
         guild_id = guild.id
