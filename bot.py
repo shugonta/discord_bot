@@ -141,7 +141,7 @@ async def on_voice_state_update(member, before, after):
         channel_name = after.channel.name
         await general_channel.send("ウイイイイイイイッッッッス。どうも、%sでーす" % member.name)
         await general_channel.send("えーとですね、まぁ集合場所の、えー%sに行ってきたんですけども、ただいまの時刻は%s時を回りました" % (channel_name, datetime.now(pytz.timezone('Asia/Tokyo')).strftime("%H")))
-        messages = TextSendMessage(text=f"ウイイイイイイイッッッッス。どうも、{member.name}でーす")
+        messages = TextSendMessage(text="ウイイイイイイイッッッッス。どうも、%sでーす" % member.name)
         # group_list = load_json(conf.json_file_name)
         # for group_id in group_list:
         #     line_bot_api.push_message(group_id, messages=messages)
