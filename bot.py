@@ -45,11 +45,11 @@ async def check_channel(guild_id):
         for guild_member in guild.members:
             if guild_member.id not in last_app_id:
                 last_app_id[guild_member.id] = None
-            if guild_member.activity is None:
+            if guild_member.activity is None and last_app_id[guild_member.id] is not None:
                 print("Member %s exited app_id %s" % (guild_member.id, last_app_id[guild_member.id]))
                 if last_app_id[guild_member.id] is not None:
                     last_app_id[guild_member.id] = None
-            else:
+            elif guild_member.activity is not None and last_app_id[guild_member.id] is None:
                 print("Member %s started app_id %s" % (guild_member.id, guild_member.activity.application_id))
                 if last_app_id[guild_member.id] != guild_member.activity.application_id:
                     messages = TextSendMessage(text="おい、%s！。お前さっき俺が着替えてる時、チラチラ%sやってただろ" % (guild_member.name, guild_member.activity.name))
