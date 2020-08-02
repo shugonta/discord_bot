@@ -40,6 +40,20 @@ async def check_channel(guild_id):
     while True:
         # await general_channel.send("test")
         await asyncio.sleep(conf.status_check_period)
+
+        guild = client.get_guild(guild_id)
+        for guild_member in guild.members:
+            if guild_member.id not in last_app_id:
+                last_app_id[guild_member.id] = None
+            if guild_member.activity is None:
+                if last_app_id[guild_member.id] is not None:
+                    last_app_id[guild_member.id] = None
+            else:
+                if last_app_id[guild_member.id] != guild_member.activity.application_id:
+                    messages = TextSendMessage(text="おい、%s！。お前さっき俺が着替えてる時、チラチラ%sやってただろ" % (guild_member.name, guild_member.activity.name))
+                    line_bot_api.push_message(conf.line_group, messages=messages)
+                    last_app_id[guild_member.id] = guild_member.activity.application_id
+
         for id, voice_channel in voice_channel_list.items():
             channel = client.get_channel(id)
 
@@ -66,17 +80,6 @@ async def check_channel(guild_id):
                 playing_same = True
                 member_list = []
                 for member in channel.members:
-                    if member.id not in last_app_id:
-                        last_app_id[member.id] = None
-                    if member.activity is None:
-                        if last_app_id[member.id] is not None:
-                            last_app_id[member.id] = None
-                    else:
-                        if last_app_id[member.id] != member.activity.application_id:
-                            messages = TextSendMessage(text="おい、%s！。お前さっき俺が着替えてる時、チラチラ%sやってただろ" % (member.name, member.activity.name))
-                            line_bot_api.push_message(conf.line_group, messages=messages)
-                            last_app_id[member.id] = member.activity.application_id
-
                     member_list.append(member.id)
                     if id == 0 and name == "":
                         if member.activity:
@@ -94,7 +97,6 @@ async def check_channel(guild_id):
                             playing_same = False
                             break
                 if playing_same:
-                    guild = client.get_guild(guild_id)
                     for user in guild.members:
                         if user.status == discord.Status.online and user.id not in member_list and user.id != conf.bot_id and user.activity is None:
                             await general_channel.send("<@!%s> この辺でぇ、%s、やってるらしいっすよ。じゃけん参加しましょうね～" % (user.id, name))
