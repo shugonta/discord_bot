@@ -84,7 +84,7 @@ async def check_channel(guild_id):
                 if playing_same:
                     guild = client.get_guild(guild_id)
                     for user in guild.members:
-                        if user.status == discord.Status.online and user.id not in member_list and user.id != conf.bot_id:
+                        if user.status == discord.Status.online and user.id not in member_list and user.id != conf.bot_id and user.activity is None:
                             await general_channel.send("<@!%s> この辺でぇ、%s、やってるらしいっすよ。じゃけん参加しましょうね～" % (user.id, name))
                             voice_channel.invite()
                             # print(user.name)
@@ -111,6 +111,7 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
 
     async for guild in client.fetch_guilds(limit=1):
         guild_id = guild.id
