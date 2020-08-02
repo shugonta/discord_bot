@@ -150,6 +150,8 @@ async def on_voice_state_update(member, before, after):
         channel_name = before.channel.name
         # await
         await general_channel.send("今日はここまでにしときます。それではみなさん、さよならー")
+        messages = TextSendMessage(text="どうも、%sでーす。というわけで今回の第一回目のオフ会はここで終わります。というわけで次の動画でお会いしましょう。またのぉーい、やっ！" % member.name)
+        line_bot_api.push_message(conf.line_group, messages=messages)
     # elif before.channel and after.channel and before.channel.name != after.channel.name:
     #     print("change")
 
