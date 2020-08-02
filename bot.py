@@ -50,11 +50,11 @@ async def check_channel(guild_id):
                 if last_app_id[guild_member.id] is not None:
                     last_app_id[guild_member.id] = None
             elif guild_member.activity is not None and last_app_id[guild_member.id] is None:
-                print("Member %s started app_id %s" % (guild_member.id, guild_member.activity.application_id))
-                if last_app_id[guild_member.id] != guild_member.activity.application_id:
+                print("Member %s started app_id %s" % (guild_member.id, guild_member.activity.name))
+                if last_app_id[guild_member.id] != guild_member.activity.name:
                     messages = TextSendMessage(text="おい、%s！。お前さっき俺が着替えてる時、チラチラ%sやってただろ" % (guild_member.name, guild_member.activity.name))
                     line_bot_api.push_message(conf.line_group, messages=messages)
-                    last_app_id[guild_member.id] = guild_member.activity.application_id
+                    last_app_id[guild_member.id] = guild_member.activity.name
 
         for id, voice_channel in voice_channel_list.items():
             channel = client.get_channel(id)
@@ -77,22 +77,22 @@ async def check_channel(guild_id):
                 interval = conf.invite_interval
 
             if interval >= conf.invite_interval and len(channel.members) > 1:
-                id = 0
+                app_name = ""
                 name = ""
                 playing_same = True
                 member_list = []
                 for member in channel.members:
                     member_list.append(member.id)
-                    if id == 0 and name == "":
+                    if app_name == 0 and name == "":
                         if member.activity:
-                            id = member.activity.application_id
+                            app_name = member.activity.name
                             name = member.activity.name
                         else:
                             playing_same = False
                             break
                     else:
                         if member.activity:
-                            if member.activity.application_id != id:
+                            if member.activity.name != app_name:
                                 playing_same = False
                                 break
                         else:
